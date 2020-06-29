@@ -45,8 +45,8 @@ fn main() {
     env_logger::try_init().ok();
     // Spawning a server in a background task.
     async_std::task::spawn(async move {
-        let listen_addr = "127.0.0.1:8000".parse().unwrap();
-        let transport_server = jsonrpsee::transport::http::HttpTransportServer::bind(&listen_addr)
+        let listen_addr = "127.0.0.1:9944".parse().unwrap();
+        let transport_server = jsonrpsee::transport::ws::WsTransportServer::builder(listen_addr).build()
             .await
             .unwrap();
         let mut server1 = jsonrpsee::raw::RawServer::new(transport_server);
@@ -67,15 +67,7 @@ fn main() {
         }
     });
 
-    // Client demo.
-    let transport_client =
-        jsonrpsee::transport::http::HttpTransportClient::new("http://127.0.0.1:8000");
-    let mut client = jsonrpsee::raw::RawClient::new(transport_client);
-    let v = async_std::task::block_on(async {
-        Health::test_notif(&mut client, "notif_string", 192)
-            .await
-            .unwrap();
-        Health::system_name(&mut client, "hello", 5).await.unwrap()
-    });
-    println!("{:?}", v);
+    loop {
+        std::thread::sleep_ms(5000);
+    }
 }

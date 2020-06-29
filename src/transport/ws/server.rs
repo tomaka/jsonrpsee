@@ -329,7 +329,10 @@ async fn per_connection_task(
             future::Either::Left((socket_packet, _)) => {
                 let socket_packet = match socket_packet {
                     Ok((ty, pq)) if ty.is_text() => pq,
-                    _ => return pending_requests,
+                    err => {
+                        panic!("error: {:?}", err);
+                        return pending_requests
+                    },
                 };
 
                 let body = match serde_json::from_slice(socket_packet.as_ref()) {
